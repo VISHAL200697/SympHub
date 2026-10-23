@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --cream-bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --navy-900: #123A52;
+  --blue-700: #2E6E8E;
+  --blue-500: #5E93B0;
+  --blue-300: #A9CBDD;
+  --error: #B3453D;
+}
+
+@layer base {
+  body {
+    background-color: #F5F3EE;
+    color: #123A52;
+    min-height: 100vh;
+    font-family: 'Poppins', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #123A52;
+    text-transform: uppercase;
+  }
+}
+
+/* Flat Card Surfaces - No shadows, rounded-2xl */
+.flat-card {
+  background-color: #FFFFFF;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(18, 58, 82, 0.1);
+  box-shadow: none !important;
+}
+
+.flat-card-interactive {
+  background-color: #FFFFFF;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(18, 58, 82, 0.1);
+  transition: all 0.2s ease-in-out;
+  box-shadow: none !important;
+}
+
+.flat-card-interactive:hover {
+  border-color: #5E93B0;
+  transform: translateY(-2px);
+}
+
+/* Soft corner gradient wash matching reference slide */
+.hero-gradient-wash {
+  background-color: #F5F3EE;
+  background-image: 
+    radial-gradient(circle at 100% 0%, rgba(46, 110, 142, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 0% 100%, rgba(169, 203, 221, 0.25) 0%, transparent 45%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F3EE;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A9CBDD;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5E93B0;
+}

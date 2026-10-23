@@ -1,0 +1,64 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './db.js';
+
+// Route Imports
+import authRoutes from './routes/auth.js';
+import eventRoutes from './routes/events.js';
+import registrationRoutes from './routes/registrations.js';
+import adminRoutes from './routes/admin.js';
+
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
+
+const app = express();
+
+// Global Middleware
+app.use(
+  cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000', '*'],
+    credentials: true,
+    exposedHeaders: ['Content-Disposition'],
+  })
+);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Domain Routers
+app.use('/auth', authRoutes);
+app.use('/', eventRoutes);
+app.use('/', registrationRoutes);
+app.use('/admin', adminRoutes);
+
+// Health Check
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    service: 'Symposium Management MERN Backend API (Node.js + Express + MongoDB)',
+    version: '1.0.0',
+  });
+});
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ detail: `Route ${req.originalUrl} not found.` });
+});
+
+// Inline Error Handler Middleware
+app.use((err, req, res, next) => {
+  console.error('Server error stack:', err.stack || err);
+  const statusCode = err.status || (res.statusCode >= 400 ? res.statusCode : 500);
+  res.status(statusCode).json({
+    detail: err.message || 'Internal Server Error',
+  });
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`🚀 Symposium Node.js MERN Backend listening on port ${PORT}`);
+});
+
+export default app;
