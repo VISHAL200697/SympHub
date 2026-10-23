@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: symphub-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 24h
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        sync: false
