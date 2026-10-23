@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import connectDB from './db.js';
 
 // Route Imports
@@ -12,7 +13,7 @@ import adminRoutes from './routes/admin.js';
 dotenv.config();
 
 // Connect to MongoDB
-connectDB();
+connectDB().catch((err) => console.error('MongoDB initial connection error:', err?.message));
 
 const app = express();
 
@@ -52,8 +53,11 @@ app.use('/admin', adminRoutes);
 
 // Health Check
 app.get('/', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = dbState === 1 ? 'connected' : dbState === 2 ? 'connecting' : 'disconnected';
   res.json({
     status: 'online',
+    database: dbStatus,
     service: 'Symposium Management MERN Backend API (Node.js + Express + MongoDB)',
     version: '1.0.0',
   });
@@ -74,8 +78,8 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`🚀 Symposium Node.js MERN Backend listening on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Symposium Node.js MERN Backend listening on 0.0.0.0:${PORT}`);
 });
 
 export default app;
