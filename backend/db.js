@@ -15,6 +15,13 @@ const connectDB = async () => {
     return null;
   }
 
+  // Detect unescaped '@' in password
+  const authority = mongoUri.split('://')[1]?.split('/')[0] || '';
+  if ((authority.match(/@/g) || []).length > 1) {
+    console.error('⚠️ Multiple "@" characters detected in MONGO_URI.');
+    console.error('👉 If your MongoDB password has an "@" symbol, replace it with "%40" (URL encoded).');
+  }
+
   try {
     const conn = await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 8000,
