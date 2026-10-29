@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import connectDB from './db.js';
+import connectDB, { getDbError } from './db.js';
 import User from './models/User.js';
 import { seedData } from './seed.js';
 
@@ -73,6 +73,7 @@ app.get('/', (req, res) => {
   res.json({
     status: 'online',
     database: dbStatus,
+    database_error: dbStatus !== 'connected' ? getDbError() : null,
     service: 'Symposium Management MERN Backend API (Node.js + Express + MongoDB)',
     version: '1.0.0',
   });
