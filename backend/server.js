@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import connectDB from './db.js';
+import User from './models/User.js';
+import { seedData } from './seed.js';
 
 // Route Imports
 import authRoutes from './routes/auth.js';
@@ -12,8 +14,21 @@ import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
-// Connect to MongoDB
-connectDB().catch((err) => console.error('MongoDB initial connection error:', err?.message));
+// Connect to MongoDB & automatically seed if database is empty
+connectDB()
+  .then(async () => {
+    try {
+      const userCount = await User.countDocuments();
+      if (userCount === 0) {
+        console.log('🌱 Fresh/empty database detected. Auto-seeding initial data...');
+        await seedData(false);
+        console.log('✅ Auto-seed completed successfully!');
+      }
+    } catch (err) {
+      console.error('Auto-seed check notice:', err.message);
+    }
+  })
+  .catch((err) => console.error('MongoDB initial connection error:', err?.message));
 
 const app = express();
 
@@ -61,6 +76,23 @@ app.get('/', (req, res) => {
     service: 'Symposium Management MERN Backend API (Node.js + Express + MongoDB)',
     version: '1.0.0',
   });
+});
+
+// Web-based Seed Trigger (Free alternative to Render Shell)
+app.all('/api/seed', async (req, res) => {
+  try {
+    const key = req.query.key || req.body?.key;
+    const expectedKey = process.env.SEED_KEY || process.env.JWT_SECRET;
+    if (process.env.NODE_ENV === 'production' && expectedKey && key !== expectedKey) {
+      return res.status(401).json({
+        error: 'Unauthorized. Provide valid ?key=<your_jwt_secret> in the URL to run seed.',
+      });
+    }
+    const result = await seedData(false);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // 404 Handler

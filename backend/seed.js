@@ -9,9 +9,11 @@ import Registration from './models/Registration.js';
 
 dotenv.config();
 
-const seedData = async () => {
+export const seedData = async (shouldExit = false) => {
   try {
-    await connectDB();
+    if (mongoose.connection.readyState !== 1) {
+      await connectDB();
+    }
 
     console.log('🧹 Resetting database collections...');
     await mongoose.connection.db.dropDatabase();
@@ -282,11 +284,22 @@ const seedData = async () => {
     }
 
     console.log('✅ Successfully seeded MongoDB database with 10 demo events!');
-    process.exit(0);
+    if (shouldExit) {
+      process.exit(0);
+    }
+    return { success: true, message: 'Database seeded successfully with 10 demo events' };
   } catch (error) {
     console.error('❌ Error seeding MongoDB:', error);
-    process.exit(1);
+    if (shouldExit) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 
-seedData();
+const isDirectRun = process.argv[1] && process.argv[1].endsWith('seed.js');
+if (isDirectRun) {
+  seedData(true);
+}
+
+export default seedData;
