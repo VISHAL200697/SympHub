@@ -3,7 +3,11 @@ import mongoose from 'mongoose';
 let lastDbError = null;
 
 const connectDB = async () => {
-  let mongoUri = (process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/symposium_db').trim();
+  let rawUri = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL;
+  if (!rawUri) {
+    console.warn('⚠️ No MONGO_URI, MONGODB_URI, or MONGO_URL found in environment variables! Falling back to 127.0.0.1.');
+  }
+  let mongoUri = (rawUri || 'mongodb://127.0.0.1:27017/symposium_db').trim();
 
   // Strip accidental quotes or prefix from copy-pasting
   mongoUri = mongoUri.replace(/^['"]|['"]$/g, '').trim();
