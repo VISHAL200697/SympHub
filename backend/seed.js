@@ -15,6 +15,10 @@ export const seedData = async (shouldExit = false) => {
       await connectDB();
     }
 
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('Database is not connected. Aborting seed operation. Please fix MONGO_URI.');
+    }
+
     console.log('🧹 Resetting database collections...');
     await mongoose.connection.db.dropDatabase();
 
